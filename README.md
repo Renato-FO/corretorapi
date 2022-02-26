@@ -58,12 +58,18 @@ $ yarn serve
 ```bash
 # unit tests
 $ npm run test
+$ or
+$ yarn test
 
 # e2e tests
 $ npm run test:e2e
+$ or
+$ yarn test:e2e
 
 # test coverage
 $ npm run test:cov
+$ or
+$ yarn test:cov
 ```
 
 ## Support
