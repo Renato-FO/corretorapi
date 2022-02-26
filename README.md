@@ -30,6 +30,8 @@
 
 ```bash
 $ npm install
+$ or
+$ yarn
 ```
 
 ## Running the app
@@ -37,12 +39,18 @@ $ npm install
 ```bash
 # development
 $ npm run start
+$ or
+$ yarn start
 
 # watch mode
-$ npm run start:dev
+$ npm run dev
+$ or
+$ yarn dev
 
 # production mode
-$ npm run start:prod
+$ npm run serve
+$ or
+$ yarn serve
 ```
 
 ## Test
