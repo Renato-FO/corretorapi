@@ -15,7 +15,7 @@ import { UsersModule } from './app/users/users.module';
         username: configService.get('DB_USERNAME', 'root'),
         password: configService.get('DB_PASSWORD', '123456'),
         database: configService.get('DB_DATABASE', 'corretorapi'),
-        entities: [],
+        entities: [__dirname + '/**/*.entity{.js,.ts}'],
         synchronize: true,
       }),
     }),
