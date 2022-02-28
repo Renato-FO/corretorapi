@@ -1,42 +1,48 @@
-import { UsersEntity } from './entity/users.entity';
+import { UpdateUserDto } from './dto/update-user-dto';
+import { CreateUserDto } from './dto/create-user-dto';
+
+import { UsersEntity } from './users.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindConditions, FindOneOptions, Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  UsersEntity: any;
   constructor(
     @InjectRepository(UsersEntity)
     private readonly usersRepository: Repository<UsersEntity>,
   ) {}
 
-  async index() {
-    return await this.usersRepository.find();
+  async findAll() {
+    return await this.usersRepository.find({
+      select: ['id', 'firstName', 'lastName', 'email', 'username'],
+    });
   }
 
-  async show(id: string) {
+  async findOneOrFail(
+    conditions?: FindConditions<UsersEntity>,
+    options?: FindOneOptions<UsersEntity>,
+  ) {
     try {
-      return await this.usersRepository.findOneOrFail(id);
+      return await this.usersRepository.findOneOrFail(conditions, options);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
   }
 
-  async create(data) {
-    return await this.usersRepository.save(this.usersRepository.create(data));
+  async store(data: CreateUserDto) {
+    const user = await this.usersRepository.create(data);
+    return await this.usersRepository.save(user);
   }
 
-  async update(id: string, data) {
-    const user = await this.usersRepository.findOneOrFail(id);
-
+  async update(id: string, data: UpdateUserDto) {
+    const user = await this.usersRepository.findOneOrFail({ id });
     this.usersRepository.merge(user, data);
     return await this.usersRepository.save(user);
   }
 
-  async delete(id: string) {
-    await this.usersRepository.findOneOrFail(id);
-
-    await this.usersRepository.softDelete(id);
+  async destroy(id: string) {
+    await this.usersRepository.findOneOrFail({ id });
+    this.usersRepository.softDelete({ id });
   }
 }
