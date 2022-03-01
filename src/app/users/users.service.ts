@@ -1,7 +1,7 @@
 import { UpdateUserDto } from './dto/update-user-dto';
 import { CreateUserDto } from './dto/create-user-dto';
 
-import { UsersEntity } from './users.entity';
+import { UsersEntity } from './entities/users.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindConditions, FindOneOptions, Repository } from 'typeorm';
@@ -31,7 +31,7 @@ export class UsersService {
   }
 
   async store(data: CreateUserDto) {
-    const user = await this.usersRepository.create(data);
+    const user = this.usersRepository.create(data);
     return await this.usersRepository.save(user);
   }
 

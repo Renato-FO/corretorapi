@@ -1,3 +1,4 @@
+import { BlacklistModule } from './../app/blacklist/blacklist.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { ConfigModule } from '@nestjs/config';
@@ -12,10 +13,11 @@ import { AuthController } from './auth.controller';
   imports: [
     ConfigModule.forRoot(),
     UsersModule,
+    BlacklistModule,
     PassportModule,
     JwtModule.register({
       privateKey: process.env.JWT_SECRET_KEY,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '15d' },
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],

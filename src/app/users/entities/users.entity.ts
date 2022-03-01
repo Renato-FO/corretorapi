@@ -14,7 +14,7 @@ export class UsersEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ unique: true })
   username: string;
 
   @Column({ name: 'first_name' })
@@ -23,7 +23,7 @@ export class UsersEntity {
   @Column({ name: 'last_name' })
   lastName: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column()
