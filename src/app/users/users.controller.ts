@@ -1,3 +1,4 @@
+import { UsersEntity } from './entities/users.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { CreateUserDto } from './dto/create-user-dto';
@@ -5,6 +6,7 @@ import { UsersService } from './users.service';
 import {
   BadRequestException,
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -15,6 +17,7 @@ import {
   Post,
   Put,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 
 @Controller('users')
@@ -37,8 +40,9 @@ export class UsersController {
   }
 
   @Get(':id')
+  @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(AuthGuard('jwt'))
-  async show(@Param('id', new ParseUUIDPipe()) id: any) {
+  async show(@Param('id', new ParseUUIDPipe()) id: any): Promise<UsersEntity> {
     return await this.usersService.findOneOrFail(id);
   }
 

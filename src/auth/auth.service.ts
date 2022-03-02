@@ -5,6 +5,7 @@ import { UsersService } from './../app/users/users.service';
 import { Injectable } from '@nestjs/common';
 import { compareSync } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { TokenPayload } from './interfaces/tokenPayload.interface';
 
 @Injectable()
 export class AuthService {
@@ -14,11 +15,15 @@ export class AuthService {
     private readonly blacklistService: BlacklistService,
   ) {}
 
-  async login(user) {
-    const payload = { sub: user.id, email: user.email };
+  async login(user: UsersEntity) {
+    const payload = { sub: user.id };
 
     return {
       token: this.jwtService.sign(payload),
+      refreshToken: this.jwtService.sign(payload, {
+        secret: process.env.JWT_REFRESH_SECRET_KEY,
+        expiresIn: process.env.JWT_REFRESH_EXPIRATION_DATE,
+      }),
     };
   }
 
@@ -42,5 +47,24 @@ export class AuthService {
 
   async logout(data: CreateBlacklistDto) {
     await this.blacklistService.store(data);
+  }
+
+  getCookieWithJwtAccessToken(userId: number) {
+    const payload: TokenPayload = { userId };
+    const token = this.jwtService.sign(payload);
+    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${process.env.JWT_EXPIRATION_DATE}`;
+  }
+
+  public getCookieWithJwtRefreshToken(userId: number) {
+    const payload: TokenPayload = { userId };
+    const token = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET_KEY,
+      expiresIn: process.env.JWT_REFRESH_EXPIRATION_DATE,
+    });
+    const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${process.env.JWT_REFRESH_EXPIRATION_DATE}`;
+    return {
+      cookie,
+      token,
+    };
   }
 }

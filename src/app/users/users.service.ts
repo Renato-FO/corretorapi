@@ -5,6 +5,7 @@ import { UsersEntity } from './entities/users.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindConditions, FindOneOptions, Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -36,7 +37,7 @@ export class UsersService {
   }
 
   async update(id: string, data: UpdateUserDto) {
-    const user = await this.usersRepository.findOneOrFail({ id });
+    const user = await this.usersRepository.findOneOrFail(id);
     this.usersRepository.merge(user, data);
     return await this.usersRepository.save(user);
   }
@@ -44,5 +45,12 @@ export class UsersService {
   async destroy(id: string) {
     await this.usersRepository.findOneOrFail({ id });
     this.usersRepository.softDelete({ id });
+  }
+
+  async setCurrentRefreshToken(refreshToken: string, userId: number) {
+    const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.usersRepository.update(userId, {
+      currentHashedRefreshToken,
+    });
   }
 }
